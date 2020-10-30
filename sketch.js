@@ -1,45 +1,53 @@
-
 const Engine = Matter.Engine;
 const World = Matter.World;
 const Bodies = Matter.Bodies;
 const Body = Matter.Body;
 
-var paperos;
-var dustbin;
-
-function preload()
-{
-	
-}
-
+var ground, gameState,engine, world,dustbin,paper;
 function setup() {
-	createCanvas(800, 700);
+  createCanvas(800, 400);
+  rectMode(CENTER);
 
+  gameState = "start";
 
+  engine = Engine.create();
+  world = engine.world;
+  Engine.run(engine);
 
-	engine = Engine.create();
-	world = engine.world;
-
-	//Create the Bodies Here.
-
-	paperos= new paper(200,200,15,15);
-	paperos.shapeColor = "pink"
-
-
-	Engine.run(engine);
-  
+  dustbin = new DustBin(720, 390, 100, 10);
+  paper = new Paper(100, 300, 10);
+  ground = Bodies.rectangle(width / 2, 400, width, 10,
+  {
+    isStatic: true
+  });
+  World.add(world, ground);
 }
-
 
 function draw() {
-  rectMode(CENTER);
-  background(0);
-  Engine.update(engine);
-  paperos.display();
-  
-  drawSprites();
- 
+  if (gameState === "start") {
+    background("black");
+    textSize(20);
+    fill("red");
+
+    if (keyCode === UP_ARROW) {
+      gameState = "play"
+    }
+  }
+  if (gameState === "play") {
+    rectMode(CENTER);
+    background(0);
+    dustbin.display();
+    paper.display();
+
+  }
 }
 
 
-
+function keyPressed(){
+  if (keyCode === UP_ARROW && gameState === "play") {
+    Matter.Body.applyForce(paper.body, paper.body.position, {
+      x: 12,
+      y: -13
+    });
+  }
+}
